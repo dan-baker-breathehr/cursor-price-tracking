@@ -2,12 +2,10 @@
 
 > **Monitor your Cursor AI usage, token consumption, and costs in real-time**
 
-[![Version](https://img.shields.io/badge/version-0.0.1-blue.svg)](https://open-vsx.org/extension/Ittipong/cursor-price-tracking)
+[![Version](https://img.shields.io/badge/version-0.0.1-blue.svg)](https://github.com/dan-baker-breathehr/cursor-price-tracking)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Open Source](https://img.shields.io/badge/Open%20Source-❤️-red.svg)](https://github.com/Ittipong/cursor-price-tracking)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Ittipong/cursor-price-tracking/pulls)
-[![Open-VSX](https://img.shields.io/badge/Open--VSX-Registry-blue.svg)](https://open-vsx.org/extension/Ittipong/cursor-price-tracking)
-[![Open-VSX](https://img.shields.io/badge/Open--VSX-Registry-orange.svg)](https://open-vsx.org/extension/Ittipong/cursor-price-tracking)
+[![Open Source](https://img.shields.io/badge/Open%20Source-❤️-red.svg)](https://github.com/dan-baker-breathehr/cursor-price-tracking)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/dan-baker-breathehr/cursor-price-tracking/pulls)
 
 Track your Cursor AI spending with comprehensive usage monitoring directly in VS Code. Never be surprised by your AI usage costs again!
 
@@ -21,13 +19,30 @@ Track your Cursor AI spending with comprehensive usage monitoring directly in VS
 3. Find `WorkosCursorSessionToken` and copy its value
 4. Paste the token when the extension prompts you
 
-### 2. Install & Use
-1. Install from [Open-VSX Registry](https://open-vsx.org/extension/Ittipong/cursor-price-tracking)
-2. Extension activates automatically
-3. View usage in the "Cursor Price Tracking" panel
-4. Check costs in the status bar
+### 2. Install the Extension
 
-📊 **Extension Registry**: [Open-VSX Registry](https://open-vsx.org/extension/Ittipong/cursor-price-tracking)
+This fork is not published to a marketplace. Install it locally by building a `.vsix` package:
+
+```bash
+git clone https://github.com/dan-baker-breathehr/cursor-price-tracking.git
+cd cursor-price-tracking
+npm install
+npm install -g @vscode/vsce   # if you don't already have it
+vsce package
+```
+
+This produces a file like `cursor-price-tracking-0.0.1.vsix`. Install it in VS Code or Cursor:
+
+- **Via the command line:**
+  ```bash
+  code --install-extension cursor-price-tracking-0.0.1.vsix
+  ```
+- **Via the UI:** Open VS Code/Cursor → Extensions panel → `...` menu → **Install from VSIX...** → select the `.vsix` file
+
+### 3. Use
+1. Extension activates automatically
+2. View usage in the "Cursor Price Tracking" panel
+3. Check costs in the status bar
 
 ## ✨ Features
 
@@ -74,7 +89,7 @@ We welcome contributions!
 
 ### Development Setup
 ```bash
-git clone https://github.com/Ittipong/cursor-price-tracking.git
+git clone https://github.com/dan-baker-breathehr/cursor-price-tracking.git
 cd cursor-price-tracking
 npm install
 npm run watch  # Start development
@@ -106,7 +121,6 @@ Your support helps maintain and improve this free extension! 🙏
 
 ## 🔗 Quick Links
 
-⭐ **Star the repo** if this helps track your AI costs!  
-🐛 **Report issues**: [GitHub Issues](https://github.com/Ittipong/cursor-price-tracking/issues)  
-📦 **Open-VSX Registry**: [Install Extension](https://open-vsx.org/extension/Ittipong/cursor-price-tracking)  
-📊 **Open-VSX Registry**: [Extension Page](https://open-vsx.org/extension/Ittipong/cursor-price-tracking)
+⭐ **Star the repo** if this helps track your AI costs!
+🐛 **Report issues**: [GitHub Issues](https://github.com/dan-baker-breathehr/cursor-price-tracking/issues)
+📦 **Upstream repo**: [Ittipong/cursor-price-tracking](https://github.com/Ittipong/cursor-price-tracking)
