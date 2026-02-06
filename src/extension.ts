@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as https from 'https';
+import { TokenService } from './tokenService';
 
 interface UsageEvent {
     timestamp: string;
@@ -298,20 +299,36 @@ class PriceDataProvider implements vscode.TreeDataProvider<PriceItem | SessionCa
     }
 
     private async loadSessionToken(): Promise<void> {
-        const config = vscode.workspace.getConfiguration('cursorPriceTracking');
-        this.sessionToken = config.get('sessionToken', '');
-        
-        if (!this.sessionToken) {
-            const token = await vscode.window.showInputBox({
-                prompt: 'Enter your Cursor session token',
-                password: true,
-                placeHolder: 'WorkosCursorSessionToken value from browser cookies'
-            });
-            
-            if (token) {
-                this.sessionToken = token;
-                await config.update('sessionToken', token, vscode.ConfigurationTarget.Global);
+        // Try auto-discovery from Cursor's local SQLite database
+        try {
+            const autoToken = await TokenService.constructSessionCookie();
+            if (autoToken) {
+                this.sessionToken = autoToken;
+                return;
             }
+        } catch (error) {
+            console.error('Token auto-discovery failed:', error);
+        }
+
+        // Fallback to manual config
+        const config = vscode.workspace.getConfiguration('cursorPriceTracking');
+        const token = config.get<string>('sessionToken', '');
+        if (token) {
+            this.sessionToken = token.startsWith('WorkosCursorSessionToken=')
+                ? token : `WorkosCursorSessionToken=${token}`;
+            return;
+        }
+
+        // Last resort: prompt user
+        const inputToken = await vscode.window.showInputBox({
+            prompt: 'Enter your Cursor session token (auto-discovery failed)',
+            password: true,
+            placeHolder: 'WorkosCursorSessionToken value from browser cookies'
+        });
+
+        if (inputToken) {
+            this.sessionToken = inputToken;
+            await config.update('sessionToken', inputToken, vscode.ConfigurationTarget.Global);
         }
     }
 
@@ -452,15 +469,31 @@ class StatusBarManager {
     }
 
     async loadSessionToken(): Promise<void> {
+        // Try auto-discovery from Cursor's local SQLite database
+        try {
+            const autoToken = await TokenService.constructSessionCookie();
+            if (autoToken) {
+                this.sessionToken = autoToken;
+                return;
+            }
+        } catch (error) {
+            console.error('Token auto-discovery failed:', error);
+        }
+
+        // Fallback to manual config
         const config = vscode.workspace.getConfiguration('cursorPriceTracking');
-        this.sessionToken = config.get('sessionToken', '');
+        const token = config.get<string>('sessionToken', '');
+        if (token) {
+            this.sessionToken = token.startsWith('WorkosCursorSessionToken=')
+                ? token : `WorkosCursorSessionToken=${token}`;
+        }
     }
 
     private updateDisplay(): void {
         if (this.isLoading) {
             this.statusBarItem.text = "$(loading~spin) Cursor: Loading...";
-            this.statusBarItem.color = new vscode.ThemeColor('statusBarItem.remoteBackground');
-            this.statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.remoteBackground');
+            this.statusBarItem.color = undefined;
+            this.statusBarItem.backgroundColor = undefined;
         } else if (this.currentUsageEvent) {
             // Use the same format as SessionCard with token count and emoji
             const emoji = this.getCostEmoji(this.currentUsageEvent);
@@ -478,9 +511,9 @@ class StatusBarManager {
                 this.statusBarItem.color = new vscode.ThemeColor('statusBarItem.warningForeground');
                 this.statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.warningBackground');
             } else if (typeof this.currentUsageEvent.cost === 'number' && this.currentUsageEvent.cost > 0) {
-                // Low cost - green theme
-                this.statusBarItem.color = new vscode.ThemeColor('statusBarItem.remoteBackground');
-                this.statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.remoteBackground');
+                // Low cost - default colors
+                this.statusBarItem.color = undefined;
+                this.statusBarItem.backgroundColor = undefined;
             } else {
                 // Default for other cases
                 this.statusBarItem.color = undefined;
@@ -673,6 +706,39 @@ export function activate(context: vscode.ExtensionContext) {
         // If initial load fails, show error state in status bar
         statusBarManager.showError();
     });
+
+    // Auto-refresh on a configurable interval
+    const config = vscode.workspace.getConfiguration('cursorPriceTracking');
+    const refreshSeconds = config.get<number>('refreshInterval', 30);
+    let autoRefreshInterval: ReturnType<typeof setInterval> | undefined;
+
+    if (refreshSeconds > 0) {
+        autoRefreshInterval = setInterval(() => {
+            priceDataProvider.refresh().catch(() => {
+                statusBarManager.showError();
+            });
+        }, refreshSeconds * 1000);
+    }
+
+    // Restart interval when config changes
+    context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
+        if (e.affectsConfiguration('cursorPriceTracking.refreshInterval')) {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = undefined;
+            }
+            const newSeconds = vscode.workspace.getConfiguration('cursorPriceTracking').get<number>('refreshInterval', 30);
+            if (newSeconds > 0) {
+                autoRefreshInterval = setInterval(() => {
+                    priceDataProvider.refresh().catch(() => {
+                        statusBarManager.showError();
+                    });
+                }, newSeconds * 1000);
+            }
+        }
+    }));
+
+    context.subscriptions.push({ dispose: () => { if (autoRefreshInterval) clearInterval(autoRefreshInterval); } });
 }
 
 export function deactivate() {}
