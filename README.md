@@ -35,7 +35,7 @@ This produces a file like `cursor-price-tracking-0.0.1.vsix`. Install it in Curs
 
 - **Via the command line:**
   ```bash
-  code --install-extension cursor-price-tracking-0.0.1.vsix
+  cursor --install-extension cursor-price-tracking-0.0.1.vsix
   ```
 - **Via the UI:** Open Cursor → Extensions panel → `...` menu → **Install from VSIX...** → select the `.vsix` file
 
