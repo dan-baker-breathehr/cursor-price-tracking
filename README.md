@@ -7,7 +7,7 @@
 [![Open Source](https://img.shields.io/badge/Open%20Source-❤️-red.svg)](https://github.com/dan-baker-breathehr/cursor-price-tracking)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/dan-baker-breathehr/cursor-price-tracking/pulls)
 
-Track your Cursor AI spending with comprehensive usage monitoring directly in VS Code. Never be surprised by your AI usage costs again!
+Track your Cursor AI spending with comprehensive usage monitoring directly in Cursor. Never be surprised by your AI usage costs again!
 
 ![Extension Screenshot](./example.png)
 
@@ -31,13 +31,13 @@ npm install -g @vscode/vsce   # if you don't already have it
 vsce package
 ```
 
-This produces a file like `cursor-price-tracking-0.0.1.vsix`. Install it in VS Code or Cursor:
+This produces a file like `cursor-price-tracking-0.0.1.vsix`. Install it in Cursor:
 
 - **Via the command line:**
   ```bash
   code --install-extension cursor-price-tracking-0.0.1.vsix
   ```
-- **Via the UI:** Open VS Code/Cursor → Extensions panel → `...` menu → **Install from VSIX...** → select the `.vsix` file
+- **Via the UI:** Open Cursor → Extensions panel → `...` menu → **Install from VSIX...** → select the `.vsix` file
 
 ### 3. Use
 1. Extension activates automatically
@@ -67,7 +67,7 @@ This produces a file like `cursor-price-tracking-0.0.1.vsix`. Install it in VS C
 | `cursorPriceTracking.sessionToken` | Your Cursor session token for API access | `""` |
 
 **To configure:**
-- Open VS Code Settings: `Ctrl+,` (Windows/Linux) or `Cmd+,` (Mac)
+- Open Cursor Settings: `Ctrl+,` (Windows/Linux) or `Cmd+,` (Mac)
 - Search for "cursor price tracking"
 - Paste your session token in the "Session Token" field
 
@@ -83,7 +83,7 @@ We welcome contributions!
 
 1. Fork the repository
 2. Create feature branch: `git checkout -b feature/amazing-feature`
-3. Make changes and test with `F5` in VS Code
+3. Make changes and test with `F5` in Cursor
 4. Commit: `git commit -m 'feat: add amazing feature'`
 5. Push and create Pull Request
 
